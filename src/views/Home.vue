@@ -8,15 +8,58 @@
     </div>
   </router-link>
 </div>
-  <form @submit.prevent="" class="z-100 mt-5">
-    <input type="text" placeholder="what are you looking for">
-    <input type="submit" value="Search"/>
+  <form @submit.prevent="SearchMovies()" class="z-100 mt- 5 flex items-center flex-col p-4 ">
+    <input class="block outline-none border-none appearance-none w-full text-white bg-gray-700 text-sm mb-15 rounded-sm transition-transform p-4" type="text" placeholder="what are you looking for" v-model="search">
+    <input class="w-full bg-green-700 p-4 rounded-sm text-white text-lg active:bg-green-900 cursor-pointer" type="submit" :value="processing ? 'loading...' : 'Search' "/>
   </form>
+  <div class="flex gap-2">
+    <div v-for="movie in movies" :key="movie.imdbID">
+          <router-link :to="'/movie/' + movie.imdbID">
+            <div class="">
+              <img :src="movie.Poster" class="block" alt="Movies Poster"/>
+              <div class="">{{movie.Type}}</div>
+              <div class="type">{{movie.Year}}</div>
+              <div class="type">{{movie.Title}}</div>
+            </div>
+          </router-link>
+    </div>
+  </div>
 </template>
 
 <script>
-
+import { ref } from 'vue';
+import env from '../env.js';
 export default {
-name:'Home'
+  setup() {
+
+    const search = ref("");
+    const movies = ref([]);
+    const processing =ref(false);
+    const SearchMovies = () => {
+      processing.value=true;
+      if (search.value != "") {
+        fetch(`http://www.omdbapi.com/?apikey=${env.apikey}&s=${search.value}`)
+            .then(response => response.json())
+            .then(data => {
+              movies.value=data.Search;
+              search.value="";
+              console.log(movies.value)
+              processing.value=false;
+            });
+      }
+    }
+
+    return {
+      search,
+      movies,
+      SearchMovies,
+      processing,
+    }
+  }
 }
 </script>
+<style>
+.disables{
+  display: none;
+}
+</style>
