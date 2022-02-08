@@ -1,5 +1,5 @@
 <template>
-<div :loading="loading.value">
+<div>
 <h2>{{movie.Title}}</h2>
   <p>{{movie.Year}}</p>
   <img :src="movie.Poster" alt="">
